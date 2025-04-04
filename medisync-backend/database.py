@@ -4,7 +4,8 @@ from sqlalchemy.orm import sessionmaker
 
 # Database connection URL
 # Format: mysql+mysqlconnector://username:password@host/database_name
-DATABASE_URL = "mysql+mysqlconnector://TheKingslayer:rupankar@localhost/medisync"
+# DATABASE_URL = "mysql+mysqlconnector://TheKingslayer:rupankar@localhost/medisync"
+DATABASE_URL = "mysql+mysqlconnector://guesswho:strongpassword@localhost:62795/medisync"
 
 # Create database engine
 engine = create_engine(DATABASE_URL)

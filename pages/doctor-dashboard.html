@@ -342,9 +342,11 @@
         <div class="sidebar-header"></div>
 
         <div class="user-info">
-          <div class="user-avatar">I</div>
-          <h3>InvictusRex</h3>
-          <p>Doctor</p>
+          <div class="user-avatar">
+            <!--will be replaced with the first letter of the name-->
+          </div>
+          <h3 id="userName">Loading...</h3>
+          <p id="doctorId">Loading...</p>
         </div>
 
         <ul class="nav-menu">
@@ -470,7 +472,36 @@
         });
       }
 
+      async function loadDashboardInfo() {
+        try {
+          const userid = localStorage.getItem("user_id") || "InvictusRex"; // Fallback to InvictusRex
+          if (!userid) {
+            window.location.href = "../index.html"; 
+            return;
+          }
+
+          const response = await fetch(
+            `http://localhost:8000//doctors/dashboard-info/${userid}`
+          );
+          if (!response.ok) {
+            throw new Error("Failed to fetch dashboard info");
+          }
+
+          const data = await response.json();
+
+          // Update the DOM elements
+          document.getElementById("userName").textContent = data.name;
+          document.getElementById("doctorId").textContent = data.doctor_id;
+          document.getElementById("userAvatar").textContent =
+            data.name[0].toUpperCase(); // First letter of name
+        } catch (error) {
+          console.error("Error loading dashboard info:", error);
+          alert("Failed to load dashboard information");
+        }
+      }
+
       document.addEventListener("DOMContentLoaded", fetchAppointments);
+      document.addEventListener("DOMContentLoaded", loadDashboardInfo);
 
       // Modal functionality
       document.querySelectorAll("[data-modal]").forEach((button) => {

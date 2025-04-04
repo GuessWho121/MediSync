@@ -6,8 +6,7 @@ from typing import Optional, List
 import models, schemas
 from database import SessionLocal
 from crud import patients, doctors, appointments, admins  # Add admins import
-from crud import patient_dashboard_header
-from crud import patient_profiles  # Change from patient_profile to patient_profiles
+from crud import patient_dashboard_header, patient_profiles, doc_dash_head
 
 app = FastAPI()
 
@@ -91,7 +90,7 @@ def login_user(user: schemas.UserLogin, db: Session = Depends(get_db)):
         db_user = admins.verify_admin(db, user.identifier, user.password)  # You'll need to import admins from crud
     else:
         raise HTTPException(
-            status_code=400, 
+            status_code=400,
             detail="Invalid user type. Must be 'patient', 'doctor', or 'admin'"
         )
 
@@ -152,9 +151,18 @@ def get_patient_dashboard_info(username: str, db: Session = Depends(get_db)):
     
     return patient_dashboard_header.format_dashboard_response(patient)
 
+@app.get("/doctors/dashboard-info/{userid}")
+def get_doctor_dashboard_info(userid: int, db: Session = Depends(get_db)):
+    doctor = doc_dash_head.get_doctor_dashboard_info(db, userid)
+    if not doctor:
+        raise HTTPException(status_code=404, detail="Doctor not found")
+    
+    return doc_dash_head.format_dashboard_response(doctor)
+
 @app.get("/patient/profile/{username}")
 def get_patient_profile(username: str, db: Session = Depends(get_db)):
     patient = patient_profiles.get_patient_profile(db, username)  # Change to patient_profiles
     if not patient:
         raise HTTPException(status_code=404, detail="Patient not found")
     return patient_profiles.format_profile_response(patient)  # Change to patient_profiles
+
